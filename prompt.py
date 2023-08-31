@@ -1,10 +1,19 @@
 import openai
 import streamlit as st
+import os
 
 # Configure openai api key
 def set_openai_api_key():
-    # Get streamlit session state for openai key and set it
-    openai.api_key = st.session_state.get("OPENAI_API_KEY")
+    # Try to get the API key from the environment
+    openai_api_key = os.getenv("OPENAI_API_KEY")
+    print(openai_api_key)
+
+    # If it's not found in the environment, get it from the streamlit session state
+    if openai_api_key is None:
+        openai_api_key = st.session_state.get("OPENAI_API_KEY")
+
+    # Set the API key
+    openai.api_key = openai_api_key
 
 def generate_prompt(prompt, chart_type, direction):
     # Preset instruction messages for the model
@@ -31,9 +40,10 @@ def SendChatRequest(prompt, chart_type, direction):
 
     # Send prompt to OpenAI
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo-16k",
         messages=full_prompt,
-        max_tokens=1000
+        max_tokens=1000,
+        temperature=0.9,
     )
     graph = response.get('choices')[0].get('message').get('content')
 

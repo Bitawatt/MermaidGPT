@@ -2,6 +2,7 @@ import streamlit as st
 from components.sidebar import sidebar
 from mermaid import generate_diagram
 from prompt import SendChatRequest
+import openai
 
 def clear_submit():
     st.session_state["submit"] = False
@@ -25,7 +26,7 @@ chart_prompt = st.text_area('Enter your chart/diagram details (be as specific as
 
 button = st.button("Generate")
 if button:
-    if not st.session_state.get("OPENAI_API_KEY"):
+    if openai.api_key is None:
         st.error("Please configure your OpenAI API key!")
     elif not chart_prompt:
         st.error("Please enter a chart prompt!")
